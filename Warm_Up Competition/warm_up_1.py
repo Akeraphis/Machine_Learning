@@ -8,6 +8,13 @@ Created on Thu Nov 23 15:33:55 2017
 import numpy as np
 from numpy import genfromtxt
 import matplotlib.pyplot as plt
+import seaborn as sb
+from sklearn import preprocessing
+from sklearn.linear_model import LogisticRegression
+from sklearn.cross_validation import train_test_split
+from sklearn import metrics 
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
 
 #Import the datasets
 full_training_dt = genfromtxt('training-data.csv', delimiter=',', skip_header=1)
@@ -41,3 +48,25 @@ plt.xlabel('Monts since last donations');
 plt.ylabel('Number of Donations');
 plt.title('Number of Months since last donation by Number of Donations');
 
+plt.plot(training[:,3],training[:,2], 'ro');
+plt.title('Total volume donated by Number of Donations');
+
+plt.hist(training[:,4]);
+plt.title('Monts since first donation');
+
+plt.plot(training[:,4],training[:,1], 'ro');
+plt.title('#months since last donation by #months since first donation');
+
+sb.countplot(training[:,5], palette='hls');
+
+#checking for missing values
+np.isnan(training)
+
+#checking for dependencies between values
+sb.heatmap(np.corrcoef(training, rowvar=False))
+
+#Logistic regression
+LogReg = LogisticRegression()
+LogReg.fit(training[:,1:4], training[:,5])
+y_pred = LogReg.predict(cv[:,1:4])
+print(classification_report(cv[:,5], y_pred))
