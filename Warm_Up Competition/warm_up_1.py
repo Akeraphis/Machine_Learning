@@ -7,6 +7,7 @@ Created on Thu Nov 23 15:33:55 2017
 
 import numpy as np
 from numpy import genfromtxt
+from numpy import savetxt
 import matplotlib.pyplot as plt
 import seaborn as sb
 from sklearn import preprocessing
@@ -70,3 +71,17 @@ LogReg = LogisticRegression()
 LogReg.fit(training[:,1:4], training[:,5])
 y_pred = LogReg.predict(test[:,1:4])
 print(classification_report(test[:,5], y_pred))
+
+#Compute log loss score
+print(metrics.log_loss(test[:,5], y_pred));
+
+
+#--------
+#ubmission of scores
+#Prediction of testing_dt
+LogReg.fit(full_training_dt[:,1:4], full_training_dt[:,5])
+res = LogReg.predict(testing_dt[:,1:4])
+res2 = np.column_stack((testing_dt[:,0], res))
+
+#write in a csv the results
+np.savetxt('res.csv', res2, delimiter=',', fmt='%.1f')
