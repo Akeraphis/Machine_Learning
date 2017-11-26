@@ -22,7 +22,7 @@ testing_dt = genfromtxt('testing-data.csv', delimiter=',', skip_header=1)
 
 #Shuffle the dataset and split into training, cv and testing
 np.random.shuffle(full_training_dt)
-training, cv, test = np.split(full_training_dt, [346, 462]);
+training, test = np.split(full_training_dt, [462]);
 
 #Plotting the data
 f, a = plt.subplots(1, 3, sharey=True, tight_layout=True)
@@ -68,5 +68,5 @@ sb.heatmap(np.corrcoef(training, rowvar=False))
 #Logistic regression
 LogReg = LogisticRegression()
 LogReg.fit(training[:,1:4], training[:,5])
-y_pred = LogReg.predict(cv[:,1:4])
-print(classification_report(cv[:,5], y_pred))
+y_pred = LogReg.predict(test[:,1:4])
+print(classification_report(test[:,5], y_pred))
