@@ -69,7 +69,7 @@ sb.heatmap(np.corrcoef(training, rowvar=False))
 #Logistic regression
 LogReg = LogisticRegression()
 LogReg.fit(training[:,[1,2,4]], training[:,5])
-y_pred = LogReg.predict(test[:,1:4])
+y_pred = LogReg.predict(test[:,[1,2,4]])
 print(classification_report(test[:,5], y_pred))
 
 #Compute log loss score
@@ -79,8 +79,8 @@ print(metrics.log_loss(test[:,5], y_pred));
 #--------
 #ubmission of scores
 #Prediction of testing_dt
-LogReg.fit(full_training_dt[:,1:4], full_training_dt[:,5])
-res = LogReg.predict(testing_dt[:,1:4])
+LogReg.fit(full_training_dt[:,[1,2,4]], full_training_dt[:,5])
+res = LogReg.predict(testing_dt[:,[1,2,4]])
 res2 = np.column_stack((testing_dt[:,0], res))
 
 #write in a csv the results
