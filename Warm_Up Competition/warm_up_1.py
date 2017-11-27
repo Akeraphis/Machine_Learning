@@ -68,7 +68,7 @@ sb.heatmap(np.corrcoef(training, rowvar=False))
 
 #Logistic regression
 LogReg = LogisticRegression()
-LogReg.fit(training[:,1:4], training[:,5])
+LogReg.fit(training[:,[1,2,4]], training[:,5])
 y_pred = LogReg.predict(test[:,1:4])
 print(classification_report(test[:,5], y_pred))
 
