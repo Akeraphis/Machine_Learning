@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import seaborn as sb
 from sklearn import preprocessing
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV
 from sklearn.cross_validation import train_test_split
 from sklearn import metrics 
 from sklearn.metrics import classification_report
@@ -66,10 +67,36 @@ np.isnan(training)
 #checking for dependencies between values
 sb.heatmap(np.corrcoef(training, rowvar=False))
 
-#Logistic regression
-LogReg = LogisticRegression()
-LogReg.fit(training[:,[1,2,4]], training[:,5])
-y_pred = LogReg.predict(test[:,[1,2,4]])
+#----------------------
+#Create new features
+#Take the logs of months since last donation and number of donations
+Log_First_Don_train = np.log(training[:,4])
+Log_Nb_Don_train = np.log(training[:, 2])
+
+plt.hist(Log_First_Don_train);
+plt.title('Log months since first donation');
+
+plt.hist(Log_Nb_Don_train);
+plt.title('Log number of donations');
+
+Log_First_Don_test = np.log(test[:,4])
+Log_Nb_Don_test = np.log(test[:, 2])
+#------------------------
+
+
+#finding the right parameters for a logistic regression
+param_grid = {'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000] }
+clf = GridSearchCV(LogisticRegression(penalty='l2'), param_grid)
+
+#Creating train and test set
+train_set = np.column_stack((training[:,[1,2,4]], Log_First_Don_train, Log_Nb_Don_train))
+test_set = np.column_stack((test[:,[1,2,4]], Log_First_Don_test, Log_Nb_Don_test))
+
+#fitting the model
+clf.fit(train_set, training[:,5])
+sorted(clf.cv_results_.keys())
+
+y_pred = clf.predict(test_set)
 print(classification_report(test[:,5], y_pred))
 
 #Compute log loss score
