@@ -18,6 +18,8 @@ from sklearn import metrics
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.svm import LinearSVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
 
 #Import the datasets
 full_training_dt = genfromtxt(r'C:\Users\jcd1\Documents\GitHub\Machine_Learning\Warm_Up Competition\training-data.csv', delimiter=',', skip_header=1)
@@ -109,15 +111,25 @@ y_pred_proba = clf.predict_proba(test_set_scaled)
 print(classification_report(test[:,5], y_pred))
 
 #Compute log loss score
-print(metrics.log_loss(test[:,5], y_pred_proba));
+print(metrics.log_loss(test[:,5], y_pred_proba[:,1]));
 
 #------------------
 #Linear SVC
-clf2=LinearSVC(random_state=0);
+X, y = make_classification(n_samples=1000, n_features=4, n_informative=2, n_redundant=0, random_state=0, shuffle=False)
+clf2=RandomForestClassifier(random_state=0);
+
+param_grid = { 'n_estimators': [200, 700],'max_features': ['auto', 'sqrt', 'log2']}
+
+CV_rfc = GridSearchCV(estimator=clf2, param_grid=param_grid, cv= 5)
+CV_rfc.fit(X, y)
+print(CV_rfc.best_params_)
+
 clf2.fit(train_set, training[:,5])
 y_pred_2 = clf2.predict(test_set)
-print(classification_report(test[:,5], y_pred_2))
-print(metrics.log_loss(test[:,5], y_pred_2));
+y_pred_proba_2 = clf2.predict_proba(test_set)
+clf2.decision_path(test_set)
+print(clf2.feature_importances_)
+print(metrics.log_loss(test[:,5], y_pred_proba_2[:,1]));
 
 
 #--------
@@ -133,9 +145,9 @@ train_set_2_scaled = preprocessing.scale(train_set_2)
 test_set_2_scaled = preprocessing.scale(test_set_2)
 clf_3 = GridSearchCV(LogisticRegression(penalty='l2'), param_grid)
 clf_3.fit(train_set_2_scaled, full_training_dt[:,5])
-y_pred_2 = clf_3.predict(test_set_2_scaled)
-y_pred_2_proba = clf_3.predict_proba(test_set_2_scaled)
-res2 = np.column_stack((testing_dt[:,0], y_pred_2_proba))
+y_pred_3 = clf_3.predict(test_set_2_scaled)
+y_pred_3_proba = clf_3.predict_proba(test_set_2_scaled)
+res2 = np.column_stack((testing_dt[:,0], y_pred_3_proba[:,1]))
 
 #write in a csv the results
 np.savetxt(r'C:\Users\jcd1\Documents\GitHub\Machine_Learning\Warm_Up Competition\res.csv', res2, delimiter=',', fmt='%.1f')
