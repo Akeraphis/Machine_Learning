@@ -18,11 +18,10 @@ from sklearn import metrics
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.svm import LinearSVC
-from plot_learning_curve1 import plot_learning_curve
 
 #Import the datasets
-full_training_dt = genfromtxt('training-data.csv', delimiter=',', skip_header=1)
-testing_dt = genfromtxt('testing-data.csv', delimiter=',', skip_header=1)
+full_training_dt = genfromtxt(r'C:\Users\jcd1\Documents\GitHub\Machine_Learning\Warm_Up Competition\training-data.csv', delimiter=',', skip_header=1)
+testing_dt = genfromtxt(r'C:\Users\jcd1\Documents\GitHub\Machine_Learning\Warm_Up Competition\testing-data.csv', delimiter=',', skip_header=1)
 
 #Shuffle the dataset and split into training, cv and testing
 np.random.shuffle(full_training_dt)
@@ -106,15 +105,11 @@ clf.best_score_
 clf.best_estimator_.C
 
 y_pred = clf.predict(test_set_scaled)
+y_pred_proba = clf.predict_proba(test_set_scaled)
 print(classification_report(test[:,5], y_pred))
 
 #Compute log loss score
-print(metrics.log_loss(test[:,5], y_pred));
-
-#Plot learning curve
-plot_learning_curve(estimator   = clf, title       = None, X           = train_set_scaled, y           = training[:,5], ylim        = (0.0, 1.10), cv          = 10, train_sizes = np.linspace(.1, 1.0, 5),n_jobs      = -1)
-
-plt.show()
+print(metrics.log_loss(test[:,5], y_pred_proba));
 
 #------------------
 #Linear SVC
@@ -138,8 +133,9 @@ train_set_2_scaled = preprocessing.scale(train_set_2)
 test_set_2_scaled = preprocessing.scale(test_set_2)
 clf_3 = GridSearchCV(LogisticRegression(penalty='l2'), param_grid)
 clf_3.fit(train_set_2_scaled, full_training_dt[:,5])
-res = clf_3.predict(test_set_2_scaled)
-res2 = np.column_stack((testing_dt[:,0], res))
+y_pred_2 = clf_3.predict(test_set_2_scaled)
+y_pred_2_proba = clf_3.predict_proba(test_set_2_scaled)
+res2 = np.column_stack((testing_dt[:,0], y_pred_2_proba))
 
 #write in a csv the results
-np.savetxt('res.csv', res2, delimiter=',', fmt='%.1f')
+np.savetxt(r'C:\Users\jcd1\Documents\GitHub\Machine_Learning\Warm_Up Competition\res.csv', res2, delimiter=',', fmt='%.1f')
