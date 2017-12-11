@@ -115,22 +115,15 @@ print(metrics.log_loss(test[:,5], y_pred_proba[:,1]));
 
 #------------------
 #Linear SVC
-X, y = make_classification(n_samples=1000, n_features=4, n_informative=2, n_redundant=0, random_state=0, shuffle=False)
 clf2=RandomForestClassifier(random_state=0);
 
 param_grid = { 'n_estimators': [200, 700],'max_features': ['auto', 'sqrt', 'log2']}
 
 CV_rfc = GridSearchCV(estimator=clf2, param_grid=param_grid, cv= 5)
-CV_rfc.fit(X, y)
-print(CV_rfc.best_params_)
-
-clf2.fit(train_set, training[:,5])
-y_pred_2 = clf2.predict(test_set)
-y_pred_proba_2 = clf2.predict_proba(test_set)
-clf2.decision_path(test_set)
-print(clf2.feature_importances_)
+CV_rfc.fit(train_set, training[:,5])
+y_pred_2 = CV_rfc.predict(test_set)
+y_pred_proba_2 = CV_rfc.predict_proba(test_set)
 print(metrics.log_loss(test[:,5], y_pred_proba_2[:,1]));
-
 
 #--------
 #ubmission of scores
@@ -151,3 +144,17 @@ res2 = np.column_stack((testing_dt[:,0], y_pred_3_proba[:,1]))
 
 #write in a csv the results
 np.savetxt(r'C:\Users\jcd1\Documents\GitHub\Machine_Learning\Warm_Up Competition\res.csv', res2, delimiter=',', fmt='%.1f')
+
+#--------
+#ubmission of scores for random forest
+#Prediction of testing_dt
+clf4=RandomForestClassifier(random_state=0);
+param_grid_2 = { 'n_estimators': [50, 200, 400, 700, 1000],'max_features': ['auto', 'sqrt', 'log2']}
+CV_rfc_2 = GridSearchCV(estimator=clf4, param_grid=param_grid_2, cv= 5)
+CV_rfc_2.fit(train_set_2_scaled, full_training_dt[:,5])
+y_pred_4 = CV_rfc_2.predict(test_set_2_scaled)
+y_pred_proba_4 = CV_rfc_2.predict_proba(test_set_2_scaled)
+res3 = np.column_stack((testing_dt[:,0], y_pred_proba_4[:,1]))
+
+#write in a csv the results
+np.savetxt(r'C:\Users\jcd1\Documents\GitHub\Machine_Learning\Warm_Up Competition\res_rf.csv', res3, delimiter=',', fmt='%.1f')
